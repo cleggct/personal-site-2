@@ -100,7 +100,7 @@ const GameOfLife = () => {
         let time_passed = 0;
         const animate = () => {
 
-            if (mousePressed?.current == true && mousePosX.current && mousePosY.current) {
+            if (mousePressed?.current === true && mousePosX.current && mousePosY.current) {
                 const posX = mousePosX.current;
                 const posY = mousePosY.current;
                 

@@ -81,7 +81,6 @@ const Mandelbrot = () => {
     const mouseDownPos = useRef(null);
     const mouseUpPos = useRef(null);
     const stateRef = useRef(null);
-    const rectGeometryRef = useRef(null);
 
     useEffect(() => {
         // Scene setup
@@ -176,8 +175,6 @@ const Mandelbrot = () => {
             if (mouseDownPos.current && mouseUpPos.current) {
 
                 const w = uniforms.top_right.value[0] - uniforms.bot_left.value[0];
-
-                const h = w * aspect;
 
                 const scale = w / width;
 

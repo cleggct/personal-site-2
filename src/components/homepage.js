@@ -50,7 +50,6 @@ const HomePage = () => {
             <img
               id="cat-pic"
               src={catImageUrl}
-              alt="Cat Image :3"
             />
           )}
         </header>
