@@ -1,8 +1,7 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import HomePage from "./components/homepage";
 import GameOfLife from "./components/conways_game_of_life";
-import MatrixBackground from "./components/matrix_background";
 import Mandelbrot from "./components/mandelbrot";
 
 const App = () => {
