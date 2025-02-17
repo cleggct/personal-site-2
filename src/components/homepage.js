@@ -86,6 +86,21 @@ const HomePage = () => {
                     Mandelbrot Set Viewer
                 </Link>
             </li>
+            <li>
+                <Link
+                    to="/boids"
+                    style={{
+                    display: "inline-block",
+                    fontSize: "20px",
+                    color: "orange",
+                    background: "black",
+                    textDecoration: "none",
+                    borderRadius: "5px",
+                    }}
+                >
+                    Boids
+                </Link>
+            </li>
           </ul>
         </section>
       </div>
