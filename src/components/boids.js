@@ -18,6 +18,8 @@ void main()	{
 `;
 
 const velocityShader = `
+uniform vec2 mousePos;
+
 void main() {
   vec2 dims = vec2(${WIDTH}.0);
   vec2 boid_idx = gl_FragCoord.xy / dims;
@@ -48,7 +50,7 @@ void main() {
       vec2 diff = other_boid_pos - boid_pos;
       float distance = diff.x * diff.x + diff.y * diff.y;
 
-      if (distance < 0.00002) {
+      if (distance < 0.00005) {
         c = c - diff;
       }
     }
@@ -65,8 +67,8 @@ void main() {
   vec2 avg_vel = partial_sum_vel / (${NUM_BOIDS}.0 - 1.0);
 
   // now subtract these from the current boid's values and scale them
-  vec2 v1 = (avg_pos - boid_pos) / 5000.0;
-  vec2 v2 = (avg_vel - boid_vel) / 800.0;
+  vec2 v1 = (avg_pos - boid_pos) / 10000.0;
+  vec2 v2 = (avg_vel - boid_vel) / 80.0;
   vec2 v3 = c / 100.0;
 
   // this term will push the boids away from the edges
@@ -84,8 +86,13 @@ void main() {
     v4 = v4 + vec2(0.0, 0.9 - boid_pos.y) * 0.01;
   }
 
+  // make them follow the mouse
+  vec2 mouse_dir = mousePos - boid_pos;
+  float mouse_dir_mag = sqrt(mouse_dir.x * mouse_dir.x + mouse_dir.y * mouse_dir.y);
+  vec2 v5 = mouse_dir / mouse_dir_mag * 0.0001;
+
   // compute the new position and velocity
-  vec2 new_vel = boid_vel + v1 + v2 + v3 + v4;
+  vec2 new_vel = boid_vel + v1 + v2 + v3 + v4 + v5;
 
   float mag = sqrt(new_vel.x * new_vel.x + new_vel.y * new_vel.y);
 
@@ -145,7 +152,7 @@ void main() {
     gl_FragColor = vec4(1.0);
   }
   else {
-    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0) + vec4(0.9 * texture2D(framebufTexture, uv).xyz, 1.0);
+    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
   }
 }
 `
@@ -157,13 +164,11 @@ const handleResize = (camera, renderer, width, height) => {
   renderer.setSize(width, height);
 };
 
-const handleMouseMove = (mousePosRef, event) => {
-  const mouseX = ( event.clientX );
-  const mouseY = ( event.clientY );
-  mousePosRef.current = {
-      x: mouseX,
-      y: mouseY
-  };
+const handleMouseMove = (width, height, event) => {
+  const mouseX = ( event.clientX ) / width;
+  const mouseY = 1 - (( event.clientY ) / height);
+
+  return [mouseX, mouseY];
 };
 
 const handleRenderError = ( gl, program, vertexShader, fragmentShader ) => {
@@ -203,6 +208,11 @@ const Boids = () => {
         const onResize = () => handleResize(camera, renderer, width, height);
         window.addEventListener("resize", onResize);
 
+        let mousePos = [0, 0];
+        const onMouseMove = (event) => {
+          mousePos = handleMouseMove(width, height, event);
+        };
+        window.addEventListener("mousemove", onMouseMove);
 
         // add the renderer to the component
         mountRef.current.appendChild(renderer.domElement);
@@ -265,17 +275,21 @@ const Boids = () => {
         const plane = new THREE.Mesh(planeGeometry, shaderMaterial);
         scene.add(plane);
 
+        const velocityUniforms = velocityVariable.material.uniforms;
+        velocityUniforms['mousePos'] = {value: new THREE.Vector2(mousePos[0], mousePos[1])};
+
         // Animation loop
         const clock = new THREE.Clock();
         const animate = () => {
             requestAnimationFrame(animate);
             gpuCompute.compute();
             uniforms.time.value = clock.getElapsedTime();
+            velocityUniforms['mousePos'].value = new THREE.Vector2(mousePos[0], mousePos[1]);
             uniforms.framebufTexture.value = framebufTexture.image;
             uniforms.velocityTexture.value = gpuCompute.getCurrentRenderTarget( velocityVariable ).texture;
             uniforms.positionTexture.value = gpuCompute.getCurrentRenderTarget( positionVariable ).texture;
-            renderer.render(scene, camera);
             renderer.copyFramebufferToTexture(framebufTexture);
+            renderer.render(scene, camera);
 
             shaderMaterial.needsUpdate = true;
         };
