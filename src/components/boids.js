@@ -65,23 +65,23 @@ void main() {
   vec2 avg_vel = partial_sum_vel / (${NUM_BOIDS}.0 - 1.0);
 
   // now subtract these from the current boid's values and scale them
-  vec2 v1 = (avg_pos - boid_pos) / 10000.0;
+  vec2 v1 = (avg_pos - boid_pos) / 5000.0;
   vec2 v2 = (avg_vel - boid_vel) / 800.0;
   vec2 v3 = c / 100.0;
 
   // this term will push the boids away from the edges
   vec2 v4 = vec2(0.0);
   if (boid_pos.x < 0.1) {
-    v4 = v4 + vec2(0.1 - boid_pos.x, 0.0) * 10.0;
+    v4 = v4 + vec2(0.1 - boid_pos.x, 0.0) * 0.01;
   }
   if (boid_pos.x > 0.9) {
-    v4 = v4 + vec2(0.9 - boid_pos.x, 0.0) * 10.0;
+    v4 = v4 + vec2(0.9 - boid_pos.x, 0.0) * 0.01;
   }
   if (boid_pos.y < 0.1) {
-    v4 = v4 + vec2(0.0, 0.1 - boid_pos.y) * 10.0;
+    v4 = v4 + vec2(0.0, 0.1 - boid_pos.y) * 0.01;
   }
   if (boid_pos.y > 0.9) {
-    v4 = v4 + vec2(0.0, 0.9 - boid_pos.y) * 10.0;
+    v4 = v4 + vec2(0.0, 0.9 - boid_pos.y) * 0.01;
   }
 
   // compute the new position and velocity
@@ -89,8 +89,8 @@ void main() {
 
   float mag = sqrt(new_vel.x * new_vel.x + new_vel.y * new_vel.y);
 
-  if (mag > 0.002) {
-    new_vel = new_vel / mag * 0.002;
+  if (mag > 0.005) {
+    new_vel = new_vel / mag * 0.005;
   }
 
   gl_FragColor = vec4(new_vel, 0.0, 0.0);
