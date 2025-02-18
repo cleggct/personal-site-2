@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { GPUComputationRenderer } from 'three/addons/misc/GPUComputationRenderer.js';
 
-const WIDTH = 8;
+const WIDTH = 16;
 
 const NUM_BOIDS = WIDTH * WIDTH;
 
